@@ -22,6 +22,8 @@ namespace ECommerce.WebUI.Controllers
         public async Task<IActionResult> AddToCart(int productId, int page, int category)
         {
             var productToBeAdded = await _productService.GetById(productId);
+            productToBeAdded.HasAdded = true;
+            await _productService.Update(productToBeAdded);
             var cart = _cartSessionService.GetCart();
             _cartService.AddToCart(cart, productToBeAdded);
 
