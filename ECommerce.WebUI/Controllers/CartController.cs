@@ -1,8 +1,10 @@
 ﻿using ECommerce.Business.Abstract;
 using ECommerce.Entities.Concrete;
+using ECommerce.Entities.Models;
 using ECommerce.WebUI.Models;
 using ECommerce.WebUI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace ECommerce.WebUI.Controllers
 {
@@ -31,7 +33,7 @@ namespace ECommerce.WebUI.Controllers
             var model = new CartListViewModel
             {
                 Cart = cart,
-                ShowRemoveButton = true
+                ShowRemoveButton=true
             };
 
             TempData.Add("message", String.Format("Your product, {0} was added successfully to cart", productToBeAdded.ProductName));
@@ -45,7 +47,7 @@ namespace ECommerce.WebUI.Controllers
             var model = new CartListViewModel
             {
                 Cart = cart,
-                ShowRemoveButton=false
+                ShowRemoveButton = false
             };
             return View(model);
         }
@@ -89,7 +91,18 @@ namespace ECommerce.WebUI.Controllers
             TempData.Add("message", "Your Product was removed successfully from cart");
             return RedirectToAction("List");
         }
-        
+        public async Task<IActionResult> RemoveFirst(int productId)
+        {
+            var cart = _cartSessionService.GetCart();
+            
+            var productToBeRemoved = await _productService.GetById(productId);
+            _cartService.RemoveFromCart(cart, productId);
+            productToBeRemoved.HasAdded = false;
+            await _productService.Update(productToBeRemoved);
+            _cartSessionService.SetCart(cart);
+            TempData.Add("message", "Your Product was removed successfully from cart");
+            return RedirectToAction("Index", "Product");
+        }
         public IActionResult Complete()
         {
             var shippingDetailViewModel = new ShippingDetailViewModel

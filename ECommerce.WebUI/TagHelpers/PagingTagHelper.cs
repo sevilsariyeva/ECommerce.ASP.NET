@@ -29,15 +29,20 @@ namespace ECommerce.WebUI.TagHelpers
                     sb.Append($"<a class='page-link' href='/product/index?page={CurrentPage - 1}&category={CurrentCategory}'>PREV</a>");
                     sb.Append("</li>");
                 }
+               
                 for (int i = 1; i <= PageCount; i++)
                 {
                     sb.AppendFormat("<li class='{0}'>", (i == CurrentPage) ? "page-item active" : "page-item");
                     sb.AppendFormat("<a class='page-link' href='/product/index?page={0}&category={1}'>{2}</a>",
                         i, CurrentCategory, i);
                     sb.Append("</li>");
-
                 }
-
+                if (CurrentPage < PageCount)
+                {
+                    sb.Append("<li class='page-item'>");
+                    sb.Append($"<a class='page-link' href='/product/index?page={CurrentPage + 1}&category={CurrentCategory}'>NEXT</a>");
+                    sb.Append("</li>");
+                }
                 sb.Append("</ul>");
             }
             output.Content.SetHtmlContent(sb.ToString());
