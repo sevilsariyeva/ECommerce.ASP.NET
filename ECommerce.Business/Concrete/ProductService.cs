@@ -44,6 +44,8 @@ namespace ECommerce.Business.Concrete
             return await _productDal.Get(p=>p.ProductId==id);
         }
 
+        
+
         public async Task Update(Product product)
         {
             await _productDal.Update(product);

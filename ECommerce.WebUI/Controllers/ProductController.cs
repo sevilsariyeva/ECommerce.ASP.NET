@@ -16,23 +16,47 @@ namespace ECommerce.WebUI.Controllers
         }
 
         // GET: ProductController
-        public async Task<ActionResult> Index(int page=1,int category=0)
+        public async Task<ActionResult> Index(int page = 1, int category = 0)
         {
-            var products=await _productService.GetAllByCategory(category);
+            var products = await _productService.GetAllByCategory(category);
 
             int pageSize = 10;
 
             var model = new ProductListViewModel
             {
-                Products = products.Skip((page-1)*pageSize).Take(pageSize).ToList(),
-                CurrentCategory=category,
-                PageCount=((int)Math.Ceiling(products.Count/(double)pageSize)),
-                PageSize=pageSize,
-                CurrentPage=page
+                Products = products.Skip((page - 1) * pageSize).Take(pageSize).ToList(),
+                CurrentCategory = category,
+                PageCount = ((int)Math.Ceiling(products.Count / (double)pageSize)),
+                PageSize = pageSize,
+                CurrentPage = page
             };
-            
+
             return View(model);
         }
+        public async Task<IActionResult> Search(string word)
+        {
+            try
+            {
+                var allProducts = await _productService.GetAll();
+
+                if (allProducts != null && !string.IsNullOrEmpty(word))
+                {
+                    var result = allProducts.Where(r => r.ProductName.ToLower().StartsWith(word.ToLower())).ToList();
+                    var model = new ProductListViewModel
+                    {
+                        Products = result
+                    };
+                    return View("Index", model);
+                }
+
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                return View(ex.Message);
+            }
+        }
+
 
         // GET: ProductController/Details/5
         public ActionResult Details(int id)
