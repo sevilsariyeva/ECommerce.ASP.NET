@@ -14,10 +14,40 @@ document.addEventListener("DOMContentLoaded", function () {
                     if (!response.ok) {
                         return;
                     }
-                    return response.text();
+                    return response.json();
                 })
                 .then(function (data) {
-                    document.querySelector('.col-md-10').innerHTML = data;
+
+                    console.log(data.length);
+                    let content = "";
+                    for (let i = 0; i < data.length; i++) {
+                        const element = data[i];
+                        //  console.log(element);
+                        content += `
+                         <tr>
+                    <td>
+                        ${data[i].productName}
+                    </td>
+                    <td>
+                     ${data[i].unitPrice}
+                    </td>
+                    <td>
+                    ${data[i].unitsInStock}
+                    </td>
+                    <td>
+                        <a class="btn btn-xs btn-success"
+                           href="/Cart/AddToCart?productId=${data[i].productId}&page=1&category=1">Add To Cart</a>
+
+                        ${
+                            if (data[i].hasAdded)` <a class="btn btn-xs btn-danger" href="/Cart/RemoveFirst?productId=${data[i].productId}">Remove</a>`
+                    }
+}
+                    </td>
+                </tr>
+                        `;
+                    }
+                     document.querySelector('#mytable').innerHTML = content;
+                    //document.innerHTML = data;
                 })
                 .catch(function (error) {
                     console.error('Error:', error);

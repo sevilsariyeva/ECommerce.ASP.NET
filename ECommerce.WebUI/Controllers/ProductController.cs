@@ -33,28 +33,20 @@ namespace ECommerce.WebUI.Controllers
 
             return View(model);
         }
-        public async Task<IActionResult> Search(string word)
+        public async Task<List<Product>> Search(string word)
         {
-            try
-            {
-                var allProducts = await _productService.GetAll();
+            var allProducts = await _productService.GetAll();
 
-                if (allProducts != null && !string.IsNullOrEmpty(word))
+            if (allProducts != null && !string.IsNullOrEmpty(word))
+            {
+                var result = allProducts.Where(r => r.ProductName.ToLower().Contains(word.ToLower())).ToList();
+                var model = new ProductListViewModel
                 {
-                    var result = allProducts.Where(r => r.ProductName.ToLower().StartsWith(word.ToLower())).ToList();
-                    var model = new ProductListViewModel
-                    {
-                        Products = result
-                    };
-                    return View("Index", model);
-                }
-
-                return RedirectToAction("Index");
+                    Products = result
+                };
+                return result;
             }
-            catch (Exception ex)
-            {
-                return View(ex.Message);
-            }
+            return null;
         }
 
 
